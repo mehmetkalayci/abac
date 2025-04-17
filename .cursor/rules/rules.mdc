@@ -1,0 +1,185 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# ABAC Sistemi Tasarımı: Detaylı Bileşenler, Kurallar, Esneklik ve Performans Optimizasyonu
+
+## 1. Temel Prensipler
+
+### Dinamik Erişim Kararları
+Erişim kararları, sistemdeki özelliklere (attributes) ve tanımlı politikalara dayalı olarak dinamik olarak verilmesi sağlanır. Hangi özelliklerin kontrol edileceği önceden bilinmez.
+
+### Esneklik ve Genişletilebilirlik
+Yeni özellikler eklemek için sadece veritabanına yeni kayıtlar eklenmesi yeterlidir; kod değişikliği yapılmaz.
+
+## 2. Sistem Bileşenleri
+Aşağıdaki bileşenler, ABAC sistemini oluşturan temel yapı taşlarıdır:
+
+### Varlıklar (Entities)
+Varlıklar: Erişim kontrolü yapılacak öğeler (kullanıcılar, kaynaklar, ortamlar) tanımlanır.
+
+| id  | entity_type | description                          |
+| --- | ----------- | ------------------------------------ |
+| 1   | user        | Sistem kullanıcıları                 |
+| 2   | resource    | Erişim kontrolü yapılacak kaynaklar  |
+| 3   | environment | Ortam değişkenleri                   |
+
+### Özellikler (Attributes)
+Özellikler: Kullanıcılar, kaynaklar ve ortamlar için kontrol edilen niteliklerdir (örneğin departman, güvenlik seviyesi, erişim saati vb.).
+
+| id  | entity_type | attribute_name  | value_type | description            |
+| --- | ----------- | --------------- | ---------- | ---------------------- |
+| 1   | user        | department      | string     | Kullanıcının departmanı |
+| 2   | user        | security_level  | integer    | Güvenlik seviyesi      |
+| 3   | resource    | category        | string     | Kaynak kategorisi      |
+| 4   | resource    | sensitivity     | enum       | Hassasiyet seviyesi    |
+| 5   | environment | time_of_day     | time       | Erişim saati           |
+
+### Özellik Değerleri (Attribute Values)
+Özellik Değerleri: Her varlık için belirli özelliklerin değerleri tanımlanır.
+
+| id  | entity_id | attribute_id | value        |
+| --- | --------- | ----------- | ------------ |
+| 1   | 101       | 1           | "HR"         |
+| 2   | 101       | 2           | "5"          |
+| 3   | 201       | 3           | "document"   |
+| 4   | 201       | 4           | "confidential" |
+| 5   | 301       | 5           | "09:30:00"   |
+
+### Politikalar (Policies)
+Politikalar: Erişim kararları için kuralların tanımlandığı, belirli koşullar altında ne tür erişim izni verileceğini belirten yapılar.
+
+| id  | policy_name     | effect | description             |
+| --- | --------------- | ------ | ----------------------- |
+| 1   | Department Access | permit | Departmana özel erişim  |
+| 2   | Time Restricted  | deny   | Zaman kısıtlı erişim   |
+
+### Politika Kuralları (Policy Rules)
+Kurallar: Bir politikanın uygulanabilmesi için gerekli koşulları içerir. Her kuralda hangi özelliklerin kontrol edileceği, karşılaştırma operatörleri ve karşılaştırılacak değerler yer alır.
+
+| id  | policy_id | attribute_id | operator | comparison_value |
+| --- | --------- | ----------- | -------- | ---------------- |
+| 1   | 1         | 1           | equals   | "Finance"        |
+| 2   | 1         | 2           | gte      | "3"              |
+| 3   | 2         | 5           | between  | "18:00-08:00"    |
+
+## 3. Dinamik Değerlendirme Motoru
+
+### ABAC Motoru
+ABAC Motoru: Erişim kontrolü sorgulamalarını gerçekleştirir. Kurallara dayalı olarak erişim izinleri kararlarını verir. Veritabanındaki özellikler ve kurallar dinamik olarak değerlendirilir.
+
+#### Python Kod Örneği (ABAC Engine):
+
+```python
+class ABACEngine:
+    def __init__(self, attribute_provider):
+        self.attribute_provider = attribute_provider
+        self.operator_handlers = {
+            'equals': self._handle_equals,
+            'gte': self._handle_gte,
+            'between': self._handle_between,
+            # Diğer operatörler buraya eklenir
+        }
+    
+    def evaluate(self, subject_id, resource_id, action, environment=None):
+        policies = self._get_relevant_policies(action)
+        
+        for policy in policies:
+            rules = self._get_policy_rules(policy['id'])
+            all_rules_match = True
+            
+            for rule in rules:
+                attribute_value = self.attribute_provider.get_value(
+                    rule['entity_type'],
+                    subject_id if rule['entity_type'] == 'user' else resource_id,
+                    rule['attribute_id']
+                )
+                
+                handler = self.operator_handlers.get(rule['operator'])
+                if not handler(attribute_value, rule['comparison_value']):
+                    all_rules_match = False
+                    break
+            
+            if all_rules_match:
+                return policy['effect']
+        
+        return 'deny'  # Varsayılan davranış
+
+    def _handle_equals(self, actual, expected):
+        return str(actual) == str(expected)
+    
+    def _handle_gte(self, actual, expected):
+        try:
+            return float(actual) >= float(expected)
+        except (ValueError, TypeError):
+            return False
+    
+    def _handle_between(self, actual, range_str):
+        try:
+            start, end = range_str.split('-')
+            return start <= actual <= end
+        except (ValueError, AttributeError):
+            return False
+
+```
+# Özellik Sağlayıcı (Attribute Provider)
+Veritabanından özellik değerlerini sağlayan sınıf. Bu sınıfın sağladığı veriler, dinamik erişim kontrolünün temelini oluşturur.
+
+Python Kod Örneği (Özellik Sağlayıcı):
+
+```
+
+class DatabaseAttributeProvider:
+    def get_value(self, entity_type, entity_id, attribute_id):
+        # Veritabanından ilgili özellik değerini çeker
+        values = {
+            ('user', 101, 1): "Finance",
+            ('user', 101, 2): "4",
+            ('resource', 201, 3): "document",
+            ('environment', 301, 5): "20:30:00"
+        }
+        return values.get((entity_type, entity_id, attribute_id))
+```
+
+Erişim Kararları
+evaluate fonksiyonu, bir kullanıcının bir kaynağa erişim talebi üzerine erişim izni verilip verilmeyeceğine karar verir.
+
+4. Kurallar ve Esneklik
+Özellik Bağımsızlığı
+Sistem, hangi özelliklerin kontrol edileceğini önceden bilmez. Tüm kararlar dinamik olarak veritabanında tanımlanan kurallara dayanır.
+Operatör Esnekliği
+Sistem, birçok karşılaştırma operatörünü destekler ve yeni operatörler kolayca eklenebilir.
+
+Yeni Özellik Ekleme
+Yeni özellikler eklemek için yalnızca veritabanına yeni kayıt eklemek yeterlidir, sistemin çalışmasına etki etmez.
+
+5. Performans ve Optimizasyon
+Önbellekleme Mekanizmaları
+Çok sayıda kural ve özellik ile büyük veri setleri ile çalışıldığında, önbellekleme stratejileri ile sistemin performansı optimize edilebilir.
+
+Detaylı Loglama
+Karmaşık kuralların doğru bir şekilde çalışıp çalışmadığını izlemek için detaylı loglama mekanizmaları gereklidir.
+
+Paralel İşlem ve Dağıtık Sistemler
+Yüksek işlem hacmi gerektiren ortamlarda paralel işlem ve dağıtık mimariler kullanılarak performans iyileştirilebilir.
+
+6. Sınırlamalar ve Çözümler
+Performans Zorlukları
+Çok sayıda kural ve özellik olduğunda, karar verme süresi uzun olabilir. Bunun için önbellekleme ve veritabanı optimizasyonu önerilir.
+
+Debug Zorluğu
+Karmaşık kuralların hata ayıklanması zor olabilir. Bu sebeple iyi yapılandırılmış loglama ve hata ayıklama araçları gerekir.
+
+Operatör Sınırlamaları
+Yeni veri türlerine özel operatörler eklemek gerekebilir. Bu, esneklik sağlamak için dikkatle tasarlanmalıdır.
+
+7. Avantajlar
+Esneklik ve Genişletilebilirlik
+Yeni özellikler, kurallar ve operatörler kolayca sisteme dahil edilebilir.
+
+Merkezi Yönetim
+Erişim kuralları merkezi olarak yönetilebilir ve uygulama kodundan bağımsızdır.
+
+Karmaşık Kurallar
+Çok sayıda özellik ve kural kombinasyonu ile karmaşık erişim kontrol senaryoları uygulanabilir.
