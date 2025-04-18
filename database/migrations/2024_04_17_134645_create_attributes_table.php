@@ -14,7 +14,9 @@ return new class extends Migration
         Schema::create('attributes', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('value');
+            $table->string('description');
+            $table->string('type');
+            $table->string('entity_type')->after('type');
             $table->timestamps();
         });
     }

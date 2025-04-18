@@ -17,16 +17,28 @@ class Policy extends Model
         'effect',
         'conditions',
         'resource',
-        'action'
+        'action',
+        'priority'
     ];
 
     protected $casts = [
-        'conditions' => 'array'
+        'conditions' => 'array',
+        'priority' => 'integer'
+    ];
+
+    const EFFECTS = [
+        'allow',
+        'deny'
     ];
 
     public function policyAttributes(): HasMany
     {
         return $this->hasMany(PolicyAttribute::class);
+    }
+
+    public function resourceAttributes(): HasMany
+    {
+        return $this->hasMany(ResourceAttribute::class);
     }
 
     public function evaluate(array $userAttributes, array $context = []): bool

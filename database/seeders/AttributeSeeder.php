@@ -15,71 +15,88 @@ class AttributeSeeder extends Seeder
         $attributes = [
             [
                 'name' => 'department',
-                'value' => 'Cardiology',
+                'description' => 'Departman bilgisi - Kardiyoloji',
+                'type' => 'string'
             ],
             [
                 'name' => 'department',
-                'value' => 'Emergency',
+                'description' => 'Departman bilgisi - Acil',
+                'type' => 'string'
             ],
             [
                 'name' => 'department',
-                'value' => 'Internal Medicine',
+                'description' => 'Departman bilgisi - İç Hastalıkları',
+                'type' => 'string'
             ],
             [
                 'name' => 'role',
-                'value' => 'Doctor',
+                'description' => 'Kullanıcı rolü - Doktor',
+                'type' => 'string'
             ],
             [
                 'name' => 'role',
-                'value' => 'Nurse',
+                'description' => 'Kullanıcı rolü - Hemşire',
+                'type' => 'string'
             ],
             [
                 'name' => 'role',
-                'value' => 'Specialist',
+                'description' => 'Kullanıcı rolü - Uzman',
+                'type' => 'string'
             ],
             [
                 'name' => 'security_clearance',
-                'value' => '3',
+                'description' => 'Güvenlik seviyesi - 3',
+                'type' => 'integer'
             ],
             [
                 'name' => 'security_clearance',
-                'value' => '4',
+                'description' => 'Güvenlik seviyesi - 4',
+                'type' => 'integer'
             ],
             [
                 'name' => 'security_clearance',
-                'value' => '5',
+                'description' => 'Güvenlik seviyesi - 5',
+                'type' => 'integer'
             ],
             [
                 'name' => 'shift_hours',
-                'value' => '08:00 to 17:00',
+                'description' => 'Çalışma saatleri - 08:00-17:00',
+                'type' => 'string'
             ],
             [
                 'name' => 'shift_hours',
-                'value' => '12:00 to 20:00',
+                'description' => 'Çalışma saatleri - 12:00-20:00',
+                'type' => 'string'
             ],
             [
                 'name' => 'shift_hours',
-                'value' => '09:00 to 18:00',
+                'description' => 'Çalışma saatleri - 09:00-18:00',
+                'type' => 'string'
             ],
             [
                 'name' => 'working_days',
-                'value' => 'Monday to Friday',
+                'description' => 'Çalışma günleri - Pazartesi-Cuma',
+                'type' => 'string'
             ],
             [
                 'name' => 'working_days',
-                'value' => 'Monday to Saturday',
+                'description' => 'Çalışma günleri - Pazartesi-Cumartesi',
+                'type' => 'string'
             ],
             [
                 'name' => 'required_training',
-                'value' => 'HIPAA, Data Privacy, Medical Ethics, Emergency Procedures',
+                'description' => 'Gerekli eğitimler - HIPAA, Veri Gizliliği, Tıbbi Etik, Acil Durum Prosedürleri',
+                'type' => 'array'
             ],
             [
                 'name' => 'required_training',
-                'value' => 'HIPAA, Data Privacy, Emergency Procedures',
+                'description' => 'Gerekli eğitimler - HIPAA, Veri Gizliliği, Acil Durum Prosedürleri',
+                'type' => 'array'
             ],
             [
                 'name' => 'required_training',
-                'value' => 'HIPAA, Data Privacy, Medical Ethics, Specialized Procedures',
+                'description' => 'Gerekli eğitimler - HIPAA, Veri Gizliliği, Tıbbi Etik, Özel Prosedürler',
+                'type' => 'array'
             ],
         ];
 

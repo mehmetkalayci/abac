@@ -1,7 +1,10 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\ABACController;
+use App\Http\Controllers\AbacController;
+use App\Http\Controllers\PolicyController;
+use App\Http\Controllers\AttributeController;
+use App\Http\Controllers\UserAttributeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -20,13 +23,28 @@ Route::middleware('auth')->group(function () {
 
 // ABAC Routes
 Route::prefix('abac')->middleware(['auth'])->group(function () {
-    Route::get('/', [ABACController::class, 'index'])->name('abac.index');
-    Route::get('/create', [ABACController::class, 'create'])->name('abac.create');
-    Route::post('/', [ABACController::class, 'store'])->name('abac.store');
-    Route::get('/{id}', [ABACController::class, 'show'])->name('abac.show');
-    Route::get('/{id}/edit', [ABACController::class, 'edit'])->name('abac.edit');
-    Route::put('/{id}', [ABACController::class, 'update'])->name('abac.update');
-    Route::delete('/{id}', [ABACController::class, 'destroy'])->name('abac.destroy');
+    Route::get('/', [AbacController::class, 'index'])->name('abac.index');
+    Route::get('/create', [AbacController::class, 'create'])->name('abac.create');
+    Route::post('/', [AbacController::class, 'store'])->name('abac.store');
+    Route::get('/{id}', [AbacController::class, 'show'])->name('abac.show');
+    Route::get('/{id}/edit', [AbacController::class, 'edit'])->name('abac.edit');
+    Route::put('/{id}', [AbacController::class, 'update'])->name('abac.update');
+    Route::delete('/{id}', [AbacController::class, 'destroy'])->name('abac.destroy');
+});
+
+// Policies routes
+Route::middleware(['auth'])->group(function () {
+    Route::prefix('abac')->name('abac.')->group(function () {
+        Route::resource('policies', PolicyController::class);
+        Route::resource('attributes', AttributeController::class);
+        Route::resource('user-attributes', UserAttributeController::class);
+        
+        // Kullanıcı öznitelikleri için route'lar
+        Route::get('/users/{user}/attributes', [UserAttributeController::class, 'index'])->name('users.attributes');
+        Route::post('/users/{user}/attributes', [UserAttributeController::class, 'store'])->name('users.attributes.store');
+        Route::put('/users/{user}/attributes/{attribute}', [UserAttributeController::class, 'update'])->name('users.attributes.update');
+        Route::delete('/users/{user}/attributes/{attribute}', [UserAttributeController::class, 'destroy'])->name('users.attributes.destroy');
+    });
 });
 
 require __DIR__.'/auth.php';

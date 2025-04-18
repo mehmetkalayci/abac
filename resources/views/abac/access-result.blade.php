@@ -37,10 +37,10 @@
                                     <p><strong>Email:</strong> {{ $user->email }}</p>
                                     <h5>Öznitelikler:</h5>
                                     <ul>
-                                        @foreach($user->attributes as $attribute)
+                                        @foreach($user->userAttributes as $userAttribute)
                                             <li>
-                                                <strong>{{ $attribute->attribute->name }}:</strong>
-                                                {{ $attribute->value }}
+                                                <strong>{{ $userAttribute->attribute->name }}:</strong>
+                                                {{ $userAttribute->value }}
                                             </li>
                                         @endforeach
                                     </ul>

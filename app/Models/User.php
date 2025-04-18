@@ -53,6 +53,11 @@ class User extends Authenticatable
         return $this->hasMany(UserAttribute::class);
     }
 
+    public function attributes(): HasMany
+    {
+        return $this->hasMany(UserAttribute::class);
+    }
+
     /**
      * Check if the user has a specific role.
      *
@@ -67,5 +72,15 @@ class User extends Authenticatable
                     ->where('value', $role);
             })
             ->exists();
+    }
+
+    // Öznitelik değerini almak için yardımcı metod
+    public function getAttribute($attributeName)
+    {
+        return $this->userAttributes()
+            ->whereHas('attribute', function ($query) use ($attributeName) {
+                $query->where('name', $attributeName);
+            })
+            ->first()?->value;
     }
 }

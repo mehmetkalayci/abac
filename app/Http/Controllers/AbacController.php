@@ -9,12 +9,13 @@ use App\Models\UserAttribute;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Routing\Controller as BaseController;
 
-class ABACController extends Controller
+class AbacController extends BaseController
 {
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware(['auth']);
     }
 
     public function index()
@@ -186,11 +187,13 @@ class ABACController extends Controller
                 ->where('attribute_id', $policyAttribute->attribute_id)
                 ->first();
 
-            if (!$userAttribute || !$this->evaluateAttribute(
-                $userAttribute->value,
-                $policyAttribute->operator,
-                $policyAttribute->value
-            )) {
+            if (
+                !$userAttribute || !$this->evaluateAttribute(
+                    $userAttribute->value,
+                    $policyAttribute->operator,
+                    $policyAttribute->value
+                )
+            ) {
                 return false;
             }
         }
@@ -293,4 +296,4 @@ class ABACController extends Controller
         return redirect()->route('abac.index')
             ->with('success', 'Attribute deleted successfully.');
     }
-} 
+}

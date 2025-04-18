@@ -1,139 +1,57 @@
-@extends('layouts.app')
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="text-xl font-semibold leading-tight text-gray-800">
+            {{ __('Yeni Politika Oluştur') }}
+        </h2>
+    </x-slot>
 
-@section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-header">
-                    <h3>Yeni Politika Oluştur</h3>
-                </div>
-
-                <div class="card-body">
-                    <form action="{{ route('abac.policies.store') }}" method="POST">
+    <div class="py-12">
+        <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
+            <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
+                <div class="p-6 bg-white border-b border-gray-200">
+                    <form method="POST" action="{{ route('abac.policies.store') }}">
                         @csrf
-                        <div class="form-group">
-                            <label for="name">Politika İsmi</label>
-                            <input type="text" name="name" id="name" class="form-control" required>
+                        <div class="mb-4">
+                            <label for="name" class="block text-sm font-medium text-gray-700">Politika Adı</label>
+                            <input type="text" name="name" id="name" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
                         </div>
 
-                        <div class="form-group">
-                            <label for="description">Açıklama</label>
-                            <textarea name="description" id="description" class="form-control" required></textarea>
+                        <div class="mb-4">
+                            <label for="description" class="block text-sm font-medium text-gray-700">Açıklama</label>
+                            <textarea name="description" id="description" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"></textarea>
                         </div>
 
-                        <div class="form-group">
-                            <label for="effect">Etki</label>
-                            <select name="effect" id="effect" class="form-control" required>
+                        <div class="mb-4">
+                            <label for="effect" class="block text-sm font-medium text-gray-700">Etki</label>
+                            <select name="effect" id="effect" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
                                 <option value="allow">İzin Ver</option>
                                 <option value="deny">Reddet</option>
                             </select>
                         </div>
 
-                        <div class="form-group">
-                            <label for="resource">Kaynak</label>
-                            <input type="text" name="resource" id="resource" class="form-control" required>
+                        <div class="mb-4">
+                            <label for="resource" class="block text-sm font-medium text-gray-700">Kaynak</label>
+                            <input type="text" name="resource" id="resource" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
                         </div>
 
-                        <div class="form-group">
-                            <label for="action">Eylem</label>
-                            <input type="text" name="action" id="action" class="form-control" required>
+                        <div class="mb-4">
+                            <label for="action" class="block text-sm font-medium text-gray-700">Eylem</label>
+                            <input type="text" name="action" id="action" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
                         </div>
 
-                        <div class="form-group">
-                            <label for="conditions">Koşullar (JSON)</label>
-                            <textarea name="conditions" id="conditions" class="form-control" required></textarea>
+                        <div class="mb-4">
+                            <label for="priority" class="block text-sm font-medium text-gray-700">Öncelik</label>
+                            <input type="number" name="priority" id="priority" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" required>
                         </div>
 
-                        <div class="form-group">
-                            <label>Öznitelikler</label>
-                            <div id="attributes-container">
-                                <div class="attribute-row mb-3">
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <select name="attributes[0][id]" class="form-control attribute-select" required>
-                                                @foreach($attributes as $attribute)
-                                                    <option value="{{ $attribute->id }}">{{ $attribute->name }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <select name="attributes[0][operator]" class="form-control operator-select" required>
-                                                <option value="equals">Eşittir</option>
-                                                <option value="not_equals">Eşit Değildir</option>
-                                                <option value="greater_than">Büyüktür</option>
-                                                <option value="less_than">Küçüktür</option>
-                                                <option value="greater_than_or_equal">Büyük Eşittir</option>
-                                                <option value="less_than_or_equal">Küçük Eşittir</option>
-                                                <option value="in">İçinde</option>
-                                                <option value="not_in">İçinde Değil</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <input type="text" name="attributes[0][value]" class="form-control value-input" required>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <button type="button" class="btn btn-secondary" id="add-attribute">Öznitelik Ekle</button>
+                        <div class="mt-6">
+                            <button type="submit" class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                                Politika Oluştur
+                            </button>
                         </div>
-
-                        <button type="submit" class="btn btn-primary">Politika Oluştur</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
-</div>
-
-@push('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const container = document.getElementById('attributes-container');
-        const addButton = document.getElementById('add-attribute');
-        let attributeCount = 1;
-
-        addButton.addEventListener('click', function() {
-            const newRow = document.createElement('div');
-            newRow.className = 'attribute-row mb-3';
-            newRow.innerHTML = `
-                <div class="row">
-                    <div class="col-md-4">
-                        <select name="attributes[${attributeCount}][id]" class="form-control attribute-select" required>
-                            @foreach($attributes as $attribute)
-                                <option value="{{ $attribute->id }}">{{ $attribute->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <select name="attributes[${attributeCount}][operator]" class="form-control operator-select" required>
-                            <option value="equals">Eşittir</option>
-                            <option value="not_equals">Eşit Değildir</option>
-                            <option value="greater_than">Büyüktür</option>
-                            <option value="less_than">Küçüktür</option>
-                            <option value="greater_than_or_equal">Büyük Eşittir</option>
-                            <option value="less_than_or_equal">Küçük Eşittir</option>
-                            <option value="in">İçinde</option>
-                            <option value="not_in">İçinde Değil</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <input type="text" name="attributes[${attributeCount}][value]" class="form-control value-input" required>
-                    </div>
-                    <div class="col-md-1">
-                        <button type="button" class="btn btn-danger remove-attribute">X</button>
-                    </div>
-                </div>
-            `;
-            container.appendChild(newRow);
-            attributeCount++;
-
-            // Remove button functionality
-            newRow.querySelector('.remove-attribute').addEventListener('click', function() {
-                container.removeChild(newRow);
-            });
-        });
-    });
-</script>
-@endpush
-@endsection 
+</x-app-layout> 
